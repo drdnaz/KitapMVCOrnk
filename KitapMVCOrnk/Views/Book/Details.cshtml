@@ -1,0 +1,7 @@
+﻿@model KitapMVCOrnk.Models.Book
+
+<h2>@Model.Title</h2>
+<img src="@Model.ImageUrl" alt="Kitap Resmi" class="img-fluid" />
+<p>Yazar: @Model.Author</p>
+<p>Fiyat: @Model.Price ₺</p>
+<a asp-controller="Book" asp-action="Index" class="btn btn-secondary">Geri Dön</a>

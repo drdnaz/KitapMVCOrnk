@@ -1,0 +1,20 @@
+﻿@model List<KitapMVCOrnk.Models.Book>
+
+<h2>Kitaplar</h2>
+
+<div class="row">
+    @foreach (var book in Model)
+    {
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <img src="@book.ImageUrl" class="card-img-top" alt="Kitap Resmi">
+                <div class="card-body">
+                    <h5 class="card-title">@book.Title</h5>
+                    <p class="card-text">@book.Author</p>
+                    <p class="card-text">@book.Price ₺</p>
+                    <a asp-controller="Book" asp-action="Details" asp-route-id="@book.Id" class="btn btn-primary">Detay</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
