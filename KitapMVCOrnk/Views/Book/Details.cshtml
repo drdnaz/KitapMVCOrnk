@@ -1,7 +1,16 @@
-﻿@model KitapMVCOrnk.Models.Book
+﻿@model KitapMVCOrnk.Models.BookViewModel
 
-<h2>@Model.Title</h2>
-<img src="@Model.ImageUrl" alt="Kitap Resmi" class="img-fluid" />
-<p>Yazar: @Model.Author</p>
-<p>Fiyat: @Model.Price ₺</p>
-<a asp-controller="Book" asp-action="Index" class="btn btn-secondary">Geri Dön</a>
+<h2 class="text-center">@Model.Title</h2>
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <img src="~/img/@Model.ImageUrl" class="card-img-top" style="height: 400px; object-fit: cover;" />
+            <div class="card-body">
+                <h5 class="card-title">Yazar: @Model.Author</h5>
+                <p class="card-text">Fiyat: <span class="text-danger fw-bold">@Model.Price ₺</span></p>
+                <a asp-controller="Book" asp-action="Index" class="btn btn-secondary">← Kitaplara Dön</a>
+            </div>
+        </div>
+    </div>
+</div>

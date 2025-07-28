@@ -1,0 +1,19 @@
+﻿@model List<KitapMVCOrnk.Models.BookViewModel>
+
+<h2 class="text-center">Favori Kitaplarım</h2>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    @foreach (var book in Model)
+    {
+        <div class="col">
+            <div class="card h-100">
+                <img src="~/img/@book.ImageUrl" class="card-img-top" alt="@book.Title" style="height:300px; object-fit:cover;">
+                <div class="card-body">
+                    <h5 class="card-title">@book.Title</h5>
+                    <p class="card-text">@book.Author</p>
+                    <p class="card-text text-danger fw-bold">@book.Price ₺</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>

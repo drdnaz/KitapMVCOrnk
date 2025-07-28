@@ -1,32 +1,66 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using KitapMVCOrnk.Context;
-using KitapMVCOrnk.Models;
+﻿using KitapMVCOrnk.Models;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace KitapMVCOrnk.Controllers
 {
     public class BookController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly HttpClient _httpClient;
 
-        public BookController(AppDbContext context)
+        public BookController()
         {
-            _context = context;
+            _httpClient = new HttpClient();
+            _httpClient.BaseAddress = new Uri("http://localhost:5079");
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Details(int id)
         {
-            var books = _context.Books.ToList();
-            return View(books);
-        }
+            var response = await _httpClient.GetAsync($"/api/Books/{id}");
 
-        public IActionResult Details(int id)
-        {
-            var book = _context.Books.FirstOrDefault(x => x.Id == id);
-            if (book == null)
-            {
+            if (!response.IsSuccessStatusCode)
                 return NotFound();
-            }
+
+            var json = await response.Content.ReadAsStringAsync();
+            var book = JsonConvert.DeserializeObject<BookViewModel>(json);
+
             return View(book);
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            try
+            {
+                // Tüm kitapları çek
+                var response = await _httpClient.GetAsync("/api/Books");
+                if (!response.IsSuccessStatusCode)
+                {
+                    ViewBag.Error = "API'den veri alınamadı.";
+                    return View(new List<BookViewModel>());
+                }
+
+                var json = await response.Content.ReadAsStringAsync();
+                var books = JsonConvert.DeserializeObject<List<BookViewModel>>(json) ?? new List<BookViewModel>();
+
+                // Favori kitapları çek
+                var favResponse = await _httpClient.GetAsync("/api/Favorite/1"); // userId = 1
+                var favJson = await favResponse.Content.ReadAsStringAsync();
+                var favBooks = JsonConvert.DeserializeObject<List<BookViewModel>>(favJson) ?? new List<BookViewModel>();
+                var favBookIds = favBooks.Select(f => f.Id).ToList();
+
+                // Her kitaba IsFavorite ata
+                foreach (var book in books)
+                {
+                    book.IsFavorite = favBookIds.Contains(book.Id);
+                }
+
+                return View(books);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Bir hata oluştu: " + ex.Message;
+                return View(new List<BookViewModel>());
+            }
         }
     }
 }

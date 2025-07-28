@@ -1,0 +1,41 @@
+﻿@model List<KitapMVCOrnk.Models.CartItem>
+
+<h2>Sepetim</h2>
+
+@if (TempData["message"] != null)
+{
+    <div class="alert alert-info">@TempData["message"]</div>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Kitap</th>
+            <th>Adet</th>
+            <th>Fiyat</th>
+            <th>Toplam</th>
+            <th>İşlem</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Title</td>
+                <td>@item.Quantity</td>
+                <td>@item.Price ₺</td>
+                <td>@(item.Price * item.Quantity) ₺</td>
+                <td>
+                    <!-- Sepetten Sil Butonu -->
+                    <form asp-action="RemoveFromCart" asp-controller="Cart" method="get" style="display:inline;">
+                        <input type="hidden" name="id" value="@item.BookId" />
+                        <button type="submit" class="btn btn-danger btn-sm">Sil</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Siparişi Tamamla Butonu -->
+<a class="btn btn-success mt-3" asp-controller="Order" asp-action="Complete">Siparişi Tamamla</a>

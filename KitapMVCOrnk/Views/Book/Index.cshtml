@@ -1,20 +1,87 @@
-﻿@model List<KitapMVCOrnk.Models.Book>
+﻿@model List<KitapMVCOrnk.Models.BookViewModel>
 
-<h2>Kitaplar</h2>
+<h2 class="text-center">Kitaplar</h2>
 
-<div class="row">
+<div class="row row-cols-1 row-cols-md-3 g-4">
     @foreach (var book in Model)
     {
-        <div class="col-md-4 mb-3">
-            <div class="card">
-                <img src="@book.ImageUrl" class="card-img-top" alt="Kitap Resmi">
+        <div class="col">
+            <div class="card h-100">
+                <img src="~/img/@book.ImageUrl" class="card-img-top" alt="@book.Title" style="height:300px; object-fit:cover;">
                 <div class="card-body">
                     <h5 class="card-title">@book.Title</h5>
                     <p class="card-text">@book.Author</p>
-                    <p class="card-text">@book.Price ₺</p>
-                    <a asp-controller="Book" asp-action="Details" asp-route-id="@book.Id" class="btn btn-primary">Detay</a>
+                    <p class="card-text text-danger fw-bold">@book.Price ₺</p>
+
+                    <a asp-controller="Book" asp-action="Details" asp-route-id="@book.Id" class="btn btn-primary me-2">Detay</a>
+                    <a asp-controller="Cart" asp-action="AddToCart"
+                       asp-route-id="@book.Id"
+                       asp-route-title="@book.Title"
+                       asp-route-price="@book.Price"
+                       asp-route-imageUrl="@book.ImageUrl"
+                       class="btn btn-success mt-2">
+                        🛒 Sepete Ekle
+                    </a>
+                    @if (book.IsFavorite)
+                    {
+                        <button class="btn btn-outline-danger mt-2" onclick="removeFromFavorites(@book.Id)">❤ Favoriden Çıkar</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-warning mt-2" onclick="addToFavorites(@book.Id)">❤ Favorilere Ekle</button>
+                    }
                 </div>
             </div>
         </div>
     }
 </div>
+@section Scripts {
+    <script>
+        function addToFavorites(bookId) {
+            fetch("http://localhost:5079/api/Favorite", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    userId: 1, // Şimdilik sabit, istersen dinamik yaparız
+                    bookId: bookId
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("Kitap favorilere eklendi!");
+                } else if (response.status === 409) {
+                    alert("Zaten favorilerde var.");
+                } else {
+                    alert("Bir hata oluştu.");
+                }
+            })
+            .catch(error => {
+                alert("Sunucuya bağlanılamadı.");
+                console.error("Hata:", error);
+            });
+        }
+    </script>
+    <script>
+        function removeFromFavorites(bookId) {
+            if (!confirm("Favorilerden kaldırmak istiyor musunuz?")) return;
+
+            fetch(`http://localhost:5079/api/Favorite/${bookId}`,{
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("Kitap favorilerden kaldırıldı.");
+                    location.reload(); // sayfa yenilenir
+                } else {
+                    alert("Kaldırma işlemi başarısız.");
+                }
+            })
+            .catch(error => {
+                console.error("Hata:", error);
+                alert("Bir hata oluştu.");
+            });
+        }
+    </script>
+}

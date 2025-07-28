@@ -1,0 +1,30 @@
+﻿@model List<KitapMVCOrnk.Models.BookViewModel>
+
+<h2 class="text-center">Kategoriye Ait Kitaplar</h2>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    @foreach (var book in Model)
+    {
+        <div class="col">
+            <div class="card h-100">
+                <img src="~/img/@book.ImageUrl" class="card-img-top" alt="@book.Title" style="height:300px; object-fit:cover;">
+                <div class="card-body">
+                    <h5 class="card-title">@book.Title</h5>
+                    <p class="card-text">@book.Author</p>
+                    <p class="card-text text-danger fw-bold">@book.Price ₺</p>
+
+                    <a asp-controller="Book" asp-action="Details" asp-route-id="@book.Id" class="btn btn-primary me-2">Detay</a>
+
+                    <a asp-controller="Cart" asp-action="AddToCart"
+                       asp-route-id="@book.Id"
+                       asp-route-title="@book.Title"
+                       asp-route-price="@book.Price"
+                       asp-route-imageUrl="@book.ImageUrl"
+                       class="btn btn-success mt-2">
+                        🛒 Sepete Ekle
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
