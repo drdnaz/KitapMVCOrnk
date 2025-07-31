@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using KitapApi.Context;
 using KitapApi.Models;
+using KitapApi.Services;
 
 namespace KitapApi.Controllers
 {
@@ -8,61 +9,41 @@ namespace KitapApi.Controllers
     [ApiController]
     public class BooksController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly BookService bookService;
 
-        public BooksController(AppDbContext context)
+        public BooksController(BookService _bookService)
         {
-            _context = context;
+            bookService = _bookService;
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var books = _context.Books.ToList();
+            var books =await bookService.GetAllBooksAsync();
             return Ok(books);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult>GetById(int id)
         {
-            var book = _context.Books.FirstOrDefault(b => b.Id == id);
+            var book = await bookService.GetBookByIdAsync(id);
             if (book == null) return NotFound();
             return Ok(book);
         }
 
         [HttpPost]
-        public IActionResult Create(Book book)
+        public async Task<IActionResult> CreateOrUpdate(Book book)
         {
-            _context.Books.Add(book);
-            _context.SaveChanges();
-            return CreatedAtAction(nameof(GetById), new { id = book.Id }, book);
-        }
-
-        [HttpPut("{id}")]
-        public IActionResult Update(int id, Book updatedBook)
-        {
-            var book = _context.Books.FirstOrDefault(b => b.Id == id);
-            if (book == null) return NotFound();
-
-            book.Title = updatedBook.Title;
-            book.Author = updatedBook.Author;
-            book.Price = updatedBook.Price;
-            book.ImageUrl = updatedBook.ImageUrl;
-            book.CategoryId = updatedBook.CategoryId;
-
-            _context.SaveChanges();
-            return NoContent();
+            var createBook =await bookService.CreateBookAsync(book);
+            return Ok(createBook);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var book = _context.Books.FirstOrDefault(b => b.Id == id);
+            var book = await bookService.GetBookByIdAsync(id);
             if (book == null) return NotFound();
-
-            _context.Books.Remove(book);
-            _context.SaveChanges();
-            return NoContent();
+            return Ok(book);
         }
     }
 }

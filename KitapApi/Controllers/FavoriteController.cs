@@ -1,6 +1,6 @@
-﻿using KitapApi.Context;
+﻿using Microsoft.AspNetCore.Mvc;
 using KitapApi.Models;
-using Microsoft.AspNetCore.Mvc;
+using KitapApi.Services;
 
 namespace KitapApi.Controllers
 {
@@ -8,62 +8,41 @@ namespace KitapApi.Controllers
     [ApiController]
     public class FavoriteController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly FavoriteService _favoriteService;
 
-        public FavoriteController(AppDbContext context)
+        public FavoriteController(FavoriteService favoriteService)
         {
-            _context = context;
+            _favoriteService = favoriteService;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var favorites = await _favoriteService.GetAllFavoritesAsync();
+            return Ok(favorites);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var favorite = await _favoriteService.GetFavoriteByIdAsync(id);
+            if (favorite == null) return NotFound();
+            return Ok(favorite);
         }
 
         [HttpPost]
-        public IActionResult AddFavorite(Favorite favorite)
+        public async Task<IActionResult> CreateOrUpdate(Favorite favorite)
         {
-            // Aynı favori var mı kontrolü (opsiyonel)
-            var existing = _context.Favorites
-                .FirstOrDefault(f => f.UserId == favorite.UserId && f.BookId == favorite.BookId);
-
-            if (existing != null)
-            {
-                return Conflict("Bu kitap zaten favorilerde.");
-            }
-
-            _context.Favorites.Add(favorite);
-            _context.SaveChanges();
-
-            return Ok(favorite);
+            var result = await _favoriteService.CreateOrUpdateFavoriteAsync(favorite);
+            return Ok(result);
         }
-      
 
-        [HttpGet("{userId}")]
-        public IActionResult GetFavoritesByUser(int userId)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
         {
-            var favorites = _context.Favorites
-                .Where(f => f.UserId == userId)
-                .Select(f => f.Book)
-                .ToList();
-
-            return Ok(favorites);
-        }
- 
-
-        [HttpDelete("{bookId}")]
-        public IActionResult RemoveFavorite(int bookId)
-        {
-            // Şu anlık kullanıcı sabit: 1 (ileride login olunca alınabilir)
-            int userId = 1;
-
-            var favorite = _context.Favorites
-                .FirstOrDefault(f => f.UserId == userId && f.BookId == bookId);
-
-            if (favorite == null)
-            {
-                return NotFound();
-            }
-
-            _context.Favorites.Remove(favorite);
-            _context.SaveChanges();
-
-            return NoContent(); 
+            var deleted = await _favoriteService.DeleteFavoriteAsync(id);
+            if (!deleted) return NotFound();
+            return NoContent();
         }
     }
 }

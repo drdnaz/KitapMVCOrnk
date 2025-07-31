@@ -2,10 +2,10 @@
 
 #nullable disable
 
-namespace KitapMVCOrnk.Migrations
+namespace KitapApi.Migrations
 {
     /// <inheritdoc />
-    public partial class AddPrecisionToBookPrice : Migration
+    public partial class v3 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

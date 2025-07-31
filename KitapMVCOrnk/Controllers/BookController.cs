@@ -35,23 +35,29 @@ namespace KitapMVCOrnk.Controllers
                 var response = await _httpClient.GetAsync("/api/Books");
                 if (!response.IsSuccessStatusCode)
                 {
-                    ViewBag.Error = "API'den veri alınamadı.";
+                    ViewBag.Error = "API'den kitaplar alınamadı.";
                     return View(new List<BookViewModel>());
                 }
 
                 var json = await response.Content.ReadAsStringAsync();
                 var books = JsonConvert.DeserializeObject<List<BookViewModel>>(json) ?? new List<BookViewModel>();
 
-                // Favori kitapları çek
+                // Favori bilgisi al
                 var favResponse = await _httpClient.GetAsync("/api/Favorite/1"); // userId = 1
-                var favJson = await favResponse.Content.ReadAsStringAsync();
-                var favBooks = JsonConvert.DeserializeObject<List<BookViewModel>>(favJson) ?? new List<BookViewModel>();
-                var favBookIds = favBooks.Select(f => f.Id).ToList();
-
-                // Her kitaba IsFavorite ata
-                foreach (var book in books)
+                if (favResponse.IsSuccessStatusCode)
                 {
-                    book.IsFavorite = favBookIds.Contains(book.Id);
+                    var favJson = await favResponse.Content.ReadAsStringAsync();
+
+                    // Favorite nesnesi deserialize edilir
+                    var favorite = JsonConvert.DeserializeObject<FavoriteViewModel>(favJson);
+                    if (favorite != null)
+                    {
+                        foreach (var book in books)
+                        {
+                            if (book.Id == favorite.BookId)
+                                book.IsFavorite = true;
+                        }
+                    }
                 }
 
                 return View(books);

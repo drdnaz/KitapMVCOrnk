@@ -34,6 +34,14 @@
             </div>
         </div>
     }
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger text-center">
+            @ViewBag.Error
+        </div>
+    }
+
+
 </div>
 @section Scripts {
     <script>

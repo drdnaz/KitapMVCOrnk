@@ -1,34 +1,48 @@
-﻿using KitapApi.Context;
+﻿using Microsoft.AspNetCore.Mvc;
 using KitapApi.Models;
-using Microsoft.AspNetCore.Mvc;
+using KitapApi.Services;
 
 namespace KitapApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class UserController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly UserService _userService;
 
-        public UsersController(AppDbContext context)
+        public UserController(UserService userService)
         {
-            _context = context;
+            _userService = userService;
         }
 
-        [HttpPost]
-        public IActionResult Create(User user)
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
         {
-            _context.Users.Add(user);
-            _context.SaveChanges();
-            return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
+            var users = await _userService.GetAllUsersAsync();
+            return Ok(users);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var user = _context.Users.Find(id);
+            var user = await _userService.GetUserByIdAsync(id);
             if (user == null) return NotFound();
             return Ok(user);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateOrUpdate(User user)
+        {
+            var result = await _userService.CreateOrUpdateUserAsync(user);
+            return Ok(result);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var deleted = await _userService.DeleteUserAsync(id);
+            if (!deleted) return NotFound();
+            return NoContent();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using KitapApi.Context;
 using KitapApi.Models;
+using KitapApi.Services;
 
 namespace KitapApi.Controllers
 {
@@ -8,57 +9,42 @@ namespace KitapApi.Controllers
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly CategoryService categoryService;
 
-        public CategoryController(AppDbContext context)
+        public CategoryController(CategoryService _categoryService)
         {
-            _context = context;
+            categoryService = _categoryService;
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var categories = _context.Categories.ToList();
+            var categories = await categoryService.GetAllCategoriesAsync();
             return Ok(categories);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var category = _context.Categories.FirstOrDefault(c => c.Id == id);
+            var category = await categoryService.GetCategoryByIdAsync(id);
             if (category == null) return NotFound();
             return Ok(category);
         }
 
         [HttpPost]
-        public IActionResult Create(Category category)
+        public async Task<IActionResult> CreateOrUpdate(Category category)
         {
-            _context.Categories.Add(category);
-            _context.SaveChanges();
-            return CreatedAtAction(nameof(GetById), new { id = category.Id }, category);
+           var createcategory = await categoryService.CreateCategoryAsync(category);
+           return Ok(createcategory);
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Update(int id, Category updatedCategory)
-        {
-            var category = _context.Categories.FirstOrDefault(c => c.Id == id);
-            if (category == null) return NotFound();
-
-            category.Name = updatedCategory.Name;
-
-            _context.SaveChanges();
-            return NoContent();
-        }
-
+       
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var category = _context.Categories.FirstOrDefault(c => c.Id == id);
+            var category = await categoryService.GetCategoryByIdAsync(id);
             if (category == null) return NotFound();
-
-            _context.Categories.Remove(category);
-            _context.SaveChanges();
-            return NoContent();
+            return Ok(category);
         }
     }
 }
