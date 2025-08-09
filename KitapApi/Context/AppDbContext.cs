@@ -21,7 +21,14 @@ namespace KitapApi.Context
             modelBuilder.Entity<Book>().HasData(
                 new Book { Id = 1, Author = "Victor Higo", CategoryId = 1, Price = 49, Title = "sefiller" },
                 new Book { Id = 2, Author = "stefan zweig", CategoryId = 2, Price = 55, Title = "satranç" },
-                new Book { Id = 3, Author = "deneme", CategoryId = 1, Price = 77, Title = "TestKitap" }
+                new Book { Id = 3, Author = "deneme", CategoryId = 1, Price = 77, Title = "TestKitap" },
+                new Book { Id = 4, Author = "George Orwell", CategoryId = 3, Price = 45, Title = "1984" },
+                new Book { Id = 5, Author = "Isaac Asimov", CategoryId = 4, Price = 60, Title = "Foundation" },
+                new Book { Id = 6, Author = "J.K. Rowling", CategoryId = 2, Price = 70, Title = "Harry Potter and the Philosopher's Stone" },
+                new Book { Id = 7, Author = "J.R.R. Tolkien", CategoryId = 3, Price = 80, Title = "The Hobbit" },
+                new Book { Id = 8, Author = "Agetha Cristie", CategoryId = 4, Price = 80, Title = "On Küçük Zenci" }
+           
+
             );
 
             modelBuilder.Entity<User>().HasData(
