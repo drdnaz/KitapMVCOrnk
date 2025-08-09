@@ -1,4 +1,4 @@
-using KitapMVCOrnk.Context;
+﻿using KitapMVCOrnk.Context;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,9 +6,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// SESSION EKLENDİ!
+builder.Services.AddSession();
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddSession();
 
 var app = builder.Build();
 
@@ -16,7 +18,7 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    // The default HSTS value is 30 days.
     app.UseHsts();
 }
 
@@ -25,7 +27,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// SESSION MIDDLEWARE'I YÜKLENDİ!
 app.UseSession();
+
 app.UseAuthorization();
 
 app.MapControllerRoute(

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KitapApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250729094303_v2")]
-    partial class v2
+    [Migration("20250808190722_v1")]
+    partial class v1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,6 +55,32 @@ namespace KitapApi.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Books");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Author = "Victor Higo",
+                            CategoryId = 1,
+                            Price = 49m,
+                            Title = "sefiller"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Author = "stefan zweig",
+                            CategoryId = 2,
+                            Price = 55m,
+                            Title = "satranç"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Author = "deneme",
+                            CategoryId = 1,
+                            Price = 77m,
+                            Title = "TestKitap"
+                        });
                 });
 
             modelBuilder.Entity("KitapApi.Models.Category", b =>
@@ -117,6 +143,20 @@ namespace KitapApi.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Favorites");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            BookId = 1,
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            BookId = 1,
+                            UserId = 2
+                        });
                 });
 
             modelBuilder.Entity("KitapApi.Models.Order", b =>
@@ -138,6 +178,20 @@ namespace KitapApi.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Orders");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            OrderDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            OrderDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserId = 2
+                        });
                 });
 
             modelBuilder.Entity("KitapApi.Models.OrderItem", b =>
@@ -164,6 +218,22 @@ namespace KitapApi.Migrations
                     b.HasIndex("OrderId");
 
                     b.ToTable("OrderItems");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            BookId = 1,
+                            OrderId = 1,
+                            Quantity = 2
+                        },
+                        new
+                        {
+                            Id = 2,
+                            BookId = 1,
+                            OrderId = 2,
+                            Quantity = 1
+                        });
                 });
 
             modelBuilder.Entity("KitapApi.Models.User", b =>
@@ -189,6 +259,22 @@ namespace KitapApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Password = "admin123",
+                            Role = "admin",
+                            UserName = "admin"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Password = "user123",
+                            Role = "user",
+                            UserName = "user"
+                        });
                 });
 
             modelBuilder.Entity("KitapApi.Models.Book", b =>
@@ -205,13 +291,13 @@ namespace KitapApi.Migrations
             modelBuilder.Entity("KitapApi.Models.Favorite", b =>
                 {
                     b.HasOne("KitapApi.Models.Book", "Book")
-                        .WithMany()
+                        .WithMany("Favorites")
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("KitapApi.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Favorites")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -251,6 +337,11 @@ namespace KitapApi.Migrations
                     b.Navigation("Order");
                 });
 
+            modelBuilder.Entity("KitapApi.Models.Book", b =>
+                {
+                    b.Navigation("Favorites");
+                });
+
             modelBuilder.Entity("KitapApi.Models.Category", b =>
                 {
                     b.Navigation("Books");
@@ -259,6 +350,11 @@ namespace KitapApi.Migrations
             modelBuilder.Entity("KitapApi.Models.Order", b =>
                 {
                     b.Navigation("OrderItems");
+                });
+
+            modelBuilder.Entity("KitapApi.Models.User", b =>
+                {
+                    b.Navigation("Favorites");
                 });
 #pragma warning restore 612, 618
         }

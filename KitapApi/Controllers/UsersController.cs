@@ -30,6 +30,15 @@ namespace KitapApi.Controllers
             return Ok(user);
         }
 
+        [HttpGet("login")]
+        public async Task<IActionResult> Login(string username, string password)
+        {
+            var user = await _userService.GetUserByUsernameAndPasswordAsync(username, password);
+            if (user == null)
+                return NotFound();
+            return Ok(new { user.Id, user.UserName, user.Role });
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateOrUpdate(User user)
         {

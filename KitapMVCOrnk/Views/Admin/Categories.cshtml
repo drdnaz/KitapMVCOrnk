@@ -1,0 +1,21 @@
+﻿@model List<KitapMVCOrnk.Models.CategoryViewModel>
+<h2>Kategoriler</h2>
+<a asp-action="CreateCategory" class="btn btn-success mb-2">Kategori Ekle</a>
+<table class="table table-bordered">
+    <tr>
+        <th>Id</th>
+        <th>Ad</th>
+        <th>İşlemler</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Id</td>
+            <td>@item.Name</td>
+            <td>
+                <a asp-action="EditCategory" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Düzenle</a>
+                <a asp-action="DeleteCategory" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Sil</a>
+            </td>
+        </tr>
+    }
+</table>

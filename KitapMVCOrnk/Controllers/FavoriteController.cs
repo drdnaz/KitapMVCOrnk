@@ -11,22 +11,43 @@ namespace KitapMVCOrnk.Controllers
         public FavoriteController()
         {
             _httpClient = new HttpClient();
-            _httpClient.BaseAddress = new Uri("http://localhost:5079"); // API portuna göre ayarla
+            _httpClient.BaseAddress = new Uri("http://localhost:5079");
         }
 
         public async Task<IActionResult> Index()
         {
-            int userId = 1; // Sabit kullanıcı (test için)
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                // Eğer giriş yapılmamışsa favori gösterme!
+                return RedirectToAction("Login", "Home");
+            }
 
-            var response = await _httpClient.GetAsync($"/api/Favorite/{userId}");
-
-            if (!response.IsSuccessStatusCode)
+            // Tüm favori kayıtlarını çek
+            var favResponse = await _httpClient.GetAsync("/api/Favorite");
+            if (!favResponse.IsSuccessStatusCode)
                 return View(new List<BookViewModel>());
 
-            var json = await response.Content.ReadAsStringAsync();
-            var books = JsonConvert.DeserializeObject<List<BookViewModel>>(json);
+            var favJson = await favResponse.Content.ReadAsStringAsync();
+            var favorites = JsonConvert.DeserializeObject<List<FavoriteViewModel>>(favJson);
 
-            return View(books ?? new List<BookViewModel>());
+            // Sadece bu kullanıcıya ait favoriler
+            var userFavorites = favorites.Where(f => f.UserId == userId.Value).ToList();
+
+            // Kitap bilgilerini topla
+            var books = new List<BookViewModel>();
+            foreach (var fav in userFavorites)
+            {
+                var bookResp = await _httpClient.GetAsync($"/api/Books/{fav.BookId}");
+                if (!bookResp.IsSuccessStatusCode) continue;
+
+                var bookJson = await bookResp.Content.ReadAsStringAsync();
+                var book = JsonConvert.DeserializeObject<BookViewModel>(bookJson);
+                if (book != null)
+                    books.Add(book);
+            }
+
+            return View(books);
         }
     }
 }

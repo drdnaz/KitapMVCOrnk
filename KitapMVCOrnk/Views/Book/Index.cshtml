@@ -44,15 +44,21 @@
 
 </div>
 @section Scripts {
+
     <script>
         function addToFavorites(bookId) {
+            var userId = '@Context.Session.GetInt32("UserId")'; // Session’dan çek!
+            if(!userId || userId === "0" || userId === "") {
+                alert("Favorilere eklemek için önce giriş yapmalısınız.");
+                return;
+            }
             fetch("http://localhost:5079/api/Favorite", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    userId: 1, // Şimdilik sabit, istersen dinamik yaparız
+                    userId: parseInt(userId), // Artık dinamik!
                     bookId: bookId
                 })
             })

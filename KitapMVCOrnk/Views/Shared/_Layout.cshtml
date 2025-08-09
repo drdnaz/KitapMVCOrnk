@@ -37,6 +37,38 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Favorite" asp-action="Index">Favoriler</a>
                         </li>
+                        @* SADECE ADMIN GİRİŞ YAPTIYSA GÖRÜNÜR *@
+                        @if (Context.Session.GetString("UserRole") == "admin")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-danger fw-bold" asp-controller="Admin" asp-action="Index">Admin Paneli</a>
+                            </li>
+                        }
+                    </ul>
+                    @* Giriş/Çıkış ve Kullanıcı Bilgisi Menüsü *@
+                    @{
+                        var userName = Context.Session.GetString("UserName");
+                        var userRole = Context.Session.GetString("UserRole");
+                    }
+                    <ul class="navbar-nav">
+                        @if (userName == null)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Home" asp-action="Login">Giriş Yap</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Home" asp-action="Register">Kayıt Ol</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <span class="nav-link">Hoşgeldin, @userName (@userRole)</span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Home" asp-action="Logout">Çıkış Yap</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>

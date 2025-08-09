@@ -33,16 +33,19 @@ namespace KitapApi.Services
 
         public async Task<Favorite> CreateOrUpdateFavoriteAsync(Favorite favorite)
         {
-            var existingFavorite = await _context.Favorites.FirstOrDefaultAsync(f => f.Id == favorite.Id);
+            // KULLANICI ve KİTAP BAZINDA ARAMA YAP!
+            var existingFavorite = await _context.Favorites
+                .FirstOrDefaultAsync(f => f.UserId == favorite.UserId && f.BookId == favorite.BookId);
 
-            if (existingFavorite != null)
-            {
-                existingFavorite.UserId = favorite.UserId;
-                existingFavorite.BookId = favorite.BookId;
+            if (existingFavorite != null) { 
+                return existingFavorite; // Zaten eklenmişse tekrar ekleme
 
-                await _context.SaveChangesAsync();
-                return existingFavorite;
-            }
+            _context.Favorites.Add(favorite);
+            await _context.SaveChangesAsync();
+            return favorite;
+        }
+
+
             else
             {
                 _context.Favorites.Add(favorite);

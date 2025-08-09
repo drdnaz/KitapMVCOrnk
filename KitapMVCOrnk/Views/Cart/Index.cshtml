@@ -10,6 +10,7 @@
 <table class="table">
     <thead>
         <tr>
+            <th>Görsel</th>  <!-- EKLENDİ -->
             <th>Kitap</th>
             <th>Adet</th>
             <th>Fiyat</th>
@@ -21,6 +22,11 @@
         @foreach (var item in Model)
         {
             <tr>
+                <td>
+                    <img src="~/img/@(string.IsNullOrEmpty(item.ImageUrl) ? "default.jpg" : item.ImageUrl)"
+                         alt="@item.Title"
+                         style="height: 60px; width: auto;" />
+                </td>
                 <td>@item.Title</td>
                 <td>@item.Quantity</td>
                 <td>@item.Price ₺</td>

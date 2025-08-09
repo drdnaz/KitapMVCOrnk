@@ -27,6 +27,12 @@ namespace KitapApi.Services
                 .FirstOrDefaultAsync(u => u.Id == id);
         }
 
+        public async Task<User?> GetUserByUsernameAndPasswordAsync(string username, string password)
+        {
+            return await _context.Users
+                .FirstOrDefaultAsync(u => u.UserName == username && u.Password == password);
+        }
+
         public async Task<User> CreateOrUpdateUserAsync(User user)
         {
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
